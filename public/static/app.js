@@ -103,26 +103,24 @@ function getStatusBadge(status, type) {
 function renderNav() {
   return `
     <nav class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex">
-            <div class="flex-shrink-0 flex items-center">
-              <i class="fas fa-car text-blue-600 text-2xl mr-3"></i>
-              <h1 class="text-xl font-bold text-gray-900">차량 관리 시스템</h1>
-            </div>
+      <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div class="flex flex-col sm:flex-row justify-between items-center py-3 sm:py-0 sm:h-16">
+          <div class="flex items-center mb-2 sm:mb-0">
+            <i class="fas fa-car text-blue-600 text-xl sm:text-2xl mr-2"></i>
+            <h1 class="text-lg sm:text-xl font-bold text-gray-900">차량 관리 시스템</h1>
           </div>
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto justify-center">
             <button onclick="showView('dashboard')" class="nav-btn ${state.currentView === 'dashboard' ? 'active' : ''}">
-              <i class="fas fa-chart-line mr-2"></i>대시보드
+              <i class="fas fa-chart-line sm:mr-2"></i><span class="hidden sm:inline">대시보드</span>
             </button>
             <button onclick="showView('employees')" class="nav-btn ${state.currentView === 'employees' ? 'active' : ''}">
-              <i class="fas fa-users mr-2"></i>직원 관리
+              <i class="fas fa-users sm:mr-2"></i><span class="hidden sm:inline">직원 관리</span>
             </button>
             <button onclick="showView('vehicles')" class="nav-btn ${state.currentView === 'vehicles' ? 'active' : ''}">
-              <i class="fas fa-car mr-2"></i>차량 관리
+              <i class="fas fa-car sm:mr-2"></i><span class="hidden sm:inline">차량 관리</span>
             </button>
             <button onclick="showView('boarding')" class="nav-btn ${state.currentView === 'boarding' ? 'active' : ''}">
-              <i class="fas fa-clipboard-check mr-2"></i>퇴근 등록
+              <i class="fas fa-clipboard-check sm:mr-2"></i><span class="hidden sm:inline">퇴근 등록</span>
             </button>
           </div>
         </div>
@@ -145,75 +143,62 @@ function renderDashboard() {
   const completedVehicles = vehicleStats.find(s => s.status === 'completed')?.count || 0
   
   return `
-    <div class="space-y-6">
+    <div class="space-y-4 sm:space-y-6">
       <!-- 통계 카드 -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
-              <i class="fas fa-user-check text-green-600 text-2xl"></i>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        <div class="bg-white rounded-lg shadow p-3 sm:p-4 md:p-6">
+          <div class="flex flex-col sm:flex-row items-center">
+            <div class="flex-shrink-0 bg-green-100 rounded-md p-2 sm:p-3 mb-2 sm:mb-0">
+              <i class="fas fa-user-check text-green-600 text-lg sm:text-xl md:text-2xl"></i>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">근무중</p>
-              <p class="text-2xl font-bold text-gray-900">${workingCount}명</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0 bg-gray-100 rounded-md p-3">
-              <i class="fas fa-user-clock text-gray-600 text-2xl"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">퇴근완료</p>
-              <p class="text-2xl font-bold text-gray-900">${leftCount}명</p>
+            <div class="sm:ml-3 md:ml-4 text-center sm:text-left">
+              <p class="text-xs sm:text-sm font-medium text-gray-600">근무중</p>
+              <p class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">${workingCount}<span class="text-sm sm:text-base">명</span></p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
-              <i class="fas fa-car text-blue-600 text-2xl"></i>
+        <div class="bg-white rounded-lg shadow p-3 sm:p-4 md:p-6">
+          <div class="flex flex-col sm:flex-row items-center">
+            <div class="flex-shrink-0 bg-gray-100 rounded-md p-2 sm:p-3 mb-2 sm:mb-0">
+              <i class="fas fa-user-clock text-gray-600 text-lg sm:text-xl md:text-2xl"></i>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">운행대기</p>
-              <p class="text-2xl font-bold text-gray-900">${waitingVehicles}대</p>
+            <div class="sm:ml-3 md:ml-4 text-center sm:text-left">
+              <p class="text-xs sm:text-sm font-medium text-gray-600">퇴근완료</p>
+              <p class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">${leftCount}<span class="text-sm sm:text-base">명</span></p>
             </div>
           </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center">
-            <div class="flex-shrink-0 bg-yellow-100 rounded-md p-3">
-              <i class="fas fa-route text-yellow-600 text-2xl"></i>
+        <div class="bg-white rounded-lg shadow p-3 sm:p-4 md:p-6">
+          <div class="flex flex-col sm:flex-row items-center">
+            <div class="flex-shrink-0 bg-blue-100 rounded-md p-2 sm:p-3 mb-2 sm:mb-0">
+              <i class="fas fa-car text-blue-600 text-lg sm:text-xl md:text-2xl"></i>
             </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">오늘 탑승</p>
-              <p class="text-2xl font-bold text-gray-900">${todayCount}건</p>
+            <div class="sm:ml-3 md:ml-4 text-center sm:text-left">
+              <p class="text-xs sm:text-sm font-medium text-gray-600">운행대기</p>
+              <p class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">${waitingVehicles}<span class="text-sm sm:text-base">대</span></p>
             </div>
           </div>
         </div>
-      </div>
-      
-      <!-- 초기화 버튼 -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900">시스템 초기화</h3>
-            <p class="text-sm text-gray-600 mt-1">모든 직원과 차량의 상태를 초기화합니다</p>
+        
+        <div class="bg-white rounded-lg shadow p-3 sm:p-4 md:p-6">
+          <div class="flex flex-col sm:flex-row items-center">
+            <div class="flex-shrink-0 bg-yellow-100 rounded-md p-2 sm:p-3 mb-2 sm:mb-0">
+              <i class="fas fa-route text-yellow-600 text-lg sm:text-xl md:text-2xl"></i>
+            </div>
+            <div class="sm:ml-3 md:ml-4 text-center sm:text-left">
+              <p class="text-xs sm:text-sm font-medium text-gray-600">오늘 탑승</p>
+              <p class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">${todayCount}<span class="text-sm sm:text-base">건</span></p>
+            </div>
           </div>
-          <button onclick="resetSystem()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-            <i class="fas fa-redo mr-2"></i>초기화
-          </button>
         </div>
       </div>
       
       <!-- 오늘의 탑승 기록 -->
       <div class="bg-white rounded-lg shadow">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900">
+        <div class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-gray-200">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900">
             <i class="fas fa-history mr-2 text-blue-600"></i>오늘의 탑승 기록
           </h3>
         </div>
@@ -221,27 +206,97 @@ function renderDashboard() {
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">시간</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">차량번호</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">기사명</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">직원명</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">부서</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">시간</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">차량번호</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">기사명</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">직원명</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">부서</th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               ${state.boardingRecords.length === 0 ? `
                 <tr>
-                  <td colspan="5" class="px-6 py-4 text-center text-gray-500">오늘의 탑승 기록이 없습니다</td>
+                  <td colspan="5" class="px-3 sm:px-6 py-4 text-center text-gray-500 text-sm">오늘의 탑승 기록이 없습니다</td>
                 </tr>
               ` : state.boardingRecords.map(record => `
                 <tr>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ${new Date(record.boarding_time).toLocaleTimeString('ko-KR')}
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                    ${new Date(record.boarding_time).toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.vehicle_number}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.driver_name}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${record.employee_name}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${record.department}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${record.vehicle_number}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${record.driver_name}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${record.employee_name}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">${record.department}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- 퇴근 등록 및 초기화 버튼 (맨 아래로 이동) -->
+      <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+          <div class="flex-1">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900">시스템 관리</h3>
+            <p class="text-xs sm:text-sm text-gray-600 mt-1">퇴근 등록 또는 시스템 초기화</p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <button onclick="showView('boarding')" class="w-full sm:w-auto px-4 py-2 sm:px-5 sm:py-2.5 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition font-medium">
+              <i class="fas fa-clipboard-check mr-2"></i>퇴근 등록
+            </button>
+            <button onclick="resetSystem()" class="w-full sm:w-auto px-4 py-2 sm:px-5 sm:py-2.5 bg-red-600 text-white text-sm sm:text-base rounded-lg hover:bg-red-700 transition font-medium">
+              <i class="fas fa-redo mr-2"></i>초기화
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+// 직원 관리 뷰
+function renderEmployees() {
+  return `
+    <div class="space-y-4 sm:space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+          <i class="fas fa-users mr-2 text-blue-600"></i>직원 관리
+        </h2>
+        <button onclick="showEmployeeModal()" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition">
+          <i class="fas fa-plus mr-2"></i>직원 추가
+        </button>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">이름</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">부서</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">상태</th>
+                <th class="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">등록일</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">작업</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${state.employees.map(emp => `
+                <tr>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">${emp.name}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">${emp.department}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm">${getStatusBadge(emp.status, 'employee')}</td>
+                  <td class="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${new Date(emp.created_at).toLocaleDateString('ko-KR')}
+                  </td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button onclick='editEmployee(${JSON.stringify(emp)})' class="text-blue-600 hover:text-blue-900 mr-2 sm:mr-3">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteEmployee(${emp.id})" class="text-red-600 hover:text-red-900">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
                 </tr>
               `).join('')}
             </tbody>
@@ -252,103 +307,55 @@ function renderDashboard() {
   `
 }
 
-// 직원 관리 뷰
-function renderEmployees() {
-  return `
-    <div class="space-y-6">
-      <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-bold text-gray-900">
-          <i class="fas fa-users mr-2 text-blue-600"></i>직원 관리
-        </h2>
-        <button onclick="showEmployeeModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-          <i class="fas fa-plus mr-2"></i>직원 추가
-        </button>
-      </div>
-      
-      <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">이름</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">부서</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">상태</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">등록일</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">작업</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            ${state.employees.map(emp => `
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${emp.name}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${emp.department}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">${getStatusBadge(emp.status, 'employee')}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  ${new Date(emp.created_at).toLocaleDateString('ko-KR')}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button onclick='editEmployee(${JSON.stringify(emp)})' class="text-blue-600 hover:text-blue-900 mr-3">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button onclick="deleteEmployee(${emp.id})" class="text-red-600 hover:text-red-900">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `
-}
-
 // 차량 관리 뷰
 function renderVehicles() {
   return `
-    <div class="space-y-6">
-      <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-bold text-gray-900">
+    <div class="space-y-4 sm:space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
           <i class="fas fa-car mr-2 text-blue-600"></i>차량 관리
         </h2>
-        <button onclick="showVehicleModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+        <button onclick="showVehicleModal()" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition">
           <i class="fas fa-plus mr-2"></i>차량 추가
         </button>
       </div>
       
       <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">차량번호</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">기사명</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">전화번호</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">상태</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">등록일</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">작업</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            ${state.vehicles.map(vehicle => `
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
               <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${vehicle.vehicle_number}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${vehicle.driver_name}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${vehicle.driver_phone}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">${getStatusBadge(vehicle.status, 'vehicle')}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  ${new Date(vehicle.created_at).toLocaleDateString('ko-KR')}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button onclick='editVehicle(${JSON.stringify(vehicle)})' class="text-blue-600 hover:text-blue-900 mr-3">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button onclick="deleteVehicle(${vehicle.id})" class="text-red-600 hover:text-red-900">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">차량번호</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">기사명</th>
+                <th class="hidden sm:table-cell px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">전화번호</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">상태</th>
+                <th class="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">등록일</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">작업</th>
               </tr>
-            `).join('')}
-          </tbody>
-        </table>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${state.vehicles.map(vehicle => `
+                <tr>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">${vehicle.vehicle_number}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${vehicle.driver_name}</td>
+                  <td class="hidden sm:table-cell px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">${vehicle.driver_phone}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm">${getStatusBadge(vehicle.status, 'vehicle')}</td>
+                  <td class="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${new Date(vehicle.created_at).toLocaleDateString('ko-KR')}
+                  </td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button onclick='editVehicle(${JSON.stringify(vehicle)})' class="text-blue-600 hover:text-blue-900 mr-2 sm:mr-3">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="deleteVehicle(${vehicle.id})" class="text-red-600 hover:text-red-900">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   `
@@ -360,35 +367,35 @@ function renderBoarding() {
   const availableEmployees = state.employees.filter(e => e.status === 'working')
   
   return `
-    <div class="space-y-6">
-      <h2 class="text-2xl font-bold text-gray-900">
+    <div class="space-y-4 sm:space-y-6">
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
         <i class="fas fa-clipboard-check mr-2 text-blue-600"></i>퇴근 등록
       </h2>
       
-      <div class="bg-white rounded-lg shadow p-6">
-        <div class="space-y-6">
+      <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+        <div class="space-y-4 sm:space-y-6">
           <!-- 차량 선택 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm sm:text-base font-medium text-gray-700 mb-3">
               <i class="fas fa-car mr-2"></i>차량 선택
             </label>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               ${availableVehicles.length === 0 ? `
-                <p class="text-gray-500 col-span-3">운행 대기 중인 차량이 없습니다</p>
+                <p class="text-gray-500 text-sm col-span-full text-center py-4">운행 대기 중인 차량이 없습니다</p>
               ` : availableVehicles.map(vehicle => `
                 <div 
                   onclick="selectVehicle(${vehicle.id})"
-                  class="border-2 rounded-lg p-4 cursor-pointer transition ${
+                  class="border-2 rounded-lg p-3 sm:p-4 cursor-pointer transition ${
                     state.selectedVehicle === vehicle.id 
                       ? 'border-blue-600 bg-blue-50' 
                       : 'border-gray-200 hover:border-gray-300'
                   }"
                 >
-                  <div class="font-semibold text-gray-900">${vehicle.vehicle_number}</div>
-                  <div class="text-sm text-gray-600 mt-1">
+                  <div class="font-semibold text-sm sm:text-base text-gray-900">${vehicle.vehicle_number}</div>
+                  <div class="text-xs sm:text-sm text-gray-600 mt-1">
                     <i class="fas fa-user mr-1"></i>${vehicle.driver_name}
                   </div>
-                  <div class="text-sm text-gray-500 mt-1">
+                  <div class="text-xs sm:text-sm text-gray-500 mt-1">
                     <i class="fas fa-phone mr-1"></i>${vehicle.driver_phone}
                   </div>
                 </div>
@@ -398,33 +405,33 @@ function renderBoarding() {
           
           <!-- 직원 선택 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm sm:text-base font-medium text-gray-700 mb-3">
               <i class="fas fa-users mr-2"></i>탑승 직원 선택 (다중 선택 가능)
             </label>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
               ${availableEmployees.length === 0 ? `
-                <p class="text-gray-500 col-span-4">근무 중인 직원이 없습니다</p>
+                <p class="text-gray-500 text-sm col-span-full text-center py-4">근무 중인 직원이 없습니다</p>
               ` : availableEmployees.map(emp => `
                 <div 
                   onclick="toggleEmployee(${emp.id})"
-                  class="border-2 rounded-lg p-3 cursor-pointer transition ${
+                  class="border-2 rounded-lg p-2 sm:p-3 cursor-pointer transition ${
                     state.selectedEmployees.includes(emp.id) 
                       ? 'border-blue-600 bg-blue-50' 
                       : 'border-gray-200 hover:border-gray-300'
                   }"
                 >
-                  <div class="font-medium text-gray-900">${emp.name}</div>
-                  <div class="text-xs text-gray-500 mt-1">${emp.department}</div>
+                  <div class="font-medium text-xs sm:text-sm text-gray-900 break-words">${emp.name}</div>
+                  <div class="text-xs text-gray-500 mt-1 break-words">${emp.department}</div>
                 </div>
               `).join('')}
             </div>
           </div>
           
           <!-- 등록 버튼 -->
-          <div class="flex justify-end">
+          <div class="flex justify-end pt-2">
             <button 
               onclick="submitBoarding()" 
-              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+              class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
               ${!state.selectedVehicle || state.selectedEmployees.length === 0 ? 'disabled' : ''}
             >
               <i class="fas fa-check mr-2"></i>
@@ -459,16 +466,22 @@ function render() {
   
   app.innerHTML = `
     ${renderNav()}
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
       ${content}
     </main>
     <style>
       .nav-btn {
-        padding: 0.5rem 1rem;
+        padding: 0.5rem 0.75rem;
         border-radius: 0.5rem;
         font-weight: 500;
         transition: all 0.2s;
         color: #4B5563;
+        white-space: nowrap;
+      }
+      @media (min-width: 640px) {
+        .nav-btn {
+          padding: 0.5rem 1rem;
+        }
       }
       .nav-btn:hover {
         background-color: #F3F4F6;
@@ -476,6 +489,18 @@ function render() {
       .nav-btn.active {
         background-color: #3B82F6;
         color: white;
+      }
+      
+      /* 모바일에서 테이블 스크롤 부드럽게 */
+      .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      /* 작은 화면에서 텍스트 줄바꿈 방지 */
+      @media (max-width: 640px) {
+        .whitespace-nowrap {
+          white-space: nowrap;
+        }
       }
     </style>
   `
