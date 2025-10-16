@@ -281,40 +281,13 @@ function renderDashboard() {
 function renderEmployees() {
   return `
     <div class="space-y-4 sm:space-y-6">
-      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
-        <i class="fas fa-users mr-2 text-blue-600"></i>직원 관리
-      </h2>
-      
-      <!-- 직원 등록 폼 -->
-      <div class="bg-white rounded-lg shadow p-4 sm:p-6">
-        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">
-          <i class="fas fa-user-plus mr-2 text-blue-600"></i>직원 등록
-        </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">이름</label>
-            <input 
-              type="text" 
-              id="employee-name" 
-              placeholder="홍길동"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">부서</label>
-            <input 
-              type="text" 
-              id="employee-department" 
-              placeholder="개발팀"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-        <div class="mt-4 flex justify-end">
-          <button onclick="createEmployee()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            <i class="fas fa-plus mr-2"></i>직원 추가
-          </button>
-        </div>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+          <i class="fas fa-users mr-2 text-blue-600"></i>직원 관리
+        </h2>
+        <button onclick="showEmployeeModal()" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition">
+          <i class="fas fa-plus mr-2"></i>직원 추가
+        </button>
       </div>
       
       <!-- 직원 목록 -->
@@ -364,49 +337,13 @@ function renderEmployees() {
 function renderVehicles() {
   return `
     <div class="space-y-4 sm:space-y-6">
-      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
-        <i class="fas fa-car mr-2 text-blue-600"></i>차량 관리
-      </h2>
-      
-      <!-- 차량 등록 폼 -->
-      <div class="bg-white rounded-lg shadow p-4 sm:p-6">
-        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">
-          <i class="fas fa-plus-circle mr-2 text-blue-600"></i>차량 등록
-        </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">차량번호</label>
-            <input 
-              type="text" 
-              id="vehicle-number" 
-              placeholder="12가3456"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">기사명</label>
-            <input 
-              type="text" 
-              id="vehicle-driver-name" 
-              placeholder="홍길동"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">전화번호</label>
-            <input 
-              type="text" 
-              id="vehicle-driver-phone" 
-              placeholder="010-1234-5678"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-        <div class="mt-4 flex justify-end">
-          <button onclick="createVehicle()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            <i class="fas fa-plus mr-2"></i>차량 추가
-          </button>
-        </div>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+          <i class="fas fa-car mr-2 text-blue-600"></i>차량 관리
+        </h2>
+        <button onclick="showVehicleModal()" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition">
+          <i class="fas fa-plus mr-2"></i>차량 추가
+        </button>
       </div>
       
       <!-- 차량 목록 -->
@@ -473,8 +410,28 @@ function renderBoarding() {
               <i class="fas fa-car mr-2"></i>차량 선택
             </label>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              <!-- 외부차량 (고정) -->
+              <div 
+                onclick="selectVehicle('external')"
+                class="border-2 rounded-lg p-3 sm:p-4 cursor-pointer transition ${
+                  state.selectedVehicle === 'external' 
+                    ? 'border-purple-600 bg-purple-50' 
+                    : 'border-purple-200 hover:border-purple-300'
+                }"
+              >
+                <div class="font-semibold text-sm sm:text-base text-purple-900">
+                  <i class="fas fa-car-side mr-2"></i>외부차량
+                </div>
+                <div class="text-xs sm:text-sm text-purple-700 mt-1">
+                  회사 차량 미사용
+                </div>
+                <div class="text-xs text-purple-600 mt-1">
+                  <i class="fas fa-info-circle mr-1"></i>개인 차량 또는 대중교통
+                </div>
+              </div>
+              
               ${availableVehicles.length === 0 ? `
-                <p class="text-gray-500 text-sm col-span-full text-center py-4">운행 대기 중인 차량이 없습니다</p>
+                <p class="text-gray-500 text-sm col-span-full text-center py-4">운행 대기 중인 회사 차량이 없습니다</p>
               ` : availableVehicles.map(vehicle => `
                 <div 
                   onclick="selectVehicle(${vehicle.id})"
@@ -584,6 +541,104 @@ function renderRecords() {
   `
 }
 
+// 모달 렌더링
+function renderModal() {
+  return `
+    <!-- 직원 추가 모달 -->
+    <div id="employee-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-user-plus mr-2 text-blue-600"></i>직원 추가
+          </h3>
+          <button onclick="closeModal('employee-modal')" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">이름</label>
+            <input 
+              type="text" 
+              id="modal-employee-name" 
+              placeholder="홍길동"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">부서</label>
+            <input 
+              type="text" 
+              id="modal-employee-department" 
+              placeholder="개발팀"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div class="flex justify-end gap-2 mt-6">
+            <button onclick="closeModal('employee-modal')" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+              취소
+            </button>
+            <button onclick="createEmployee()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              <i class="fas fa-plus mr-2"></i>추가
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 차량 추가 모달 -->
+    <div id="vehicle-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-car mr-2 text-blue-600"></i>차량 추가
+          </h3>
+          <button onclick="closeModal('vehicle-modal')" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">차량번호</label>
+            <input 
+              type="text" 
+              id="modal-vehicle-number" 
+              placeholder="12가3456"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">기사명</label>
+            <input 
+              type="text" 
+              id="modal-vehicle-driver-name" 
+              placeholder="홍길동"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">전화번호</label>
+            <input 
+              type="text" 
+              id="modal-vehicle-driver-phone" 
+              placeholder="010-1234-5678"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div class="flex justify-end gap-2 mt-6">
+            <button onclick="closeModal('vehicle-modal')" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+              취소
+            </button>
+            <button onclick="createVehicle()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              <i class="fas fa-plus mr-2"></i>추가
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+}
+
 // 렌더링
 function render() {
   const app = document.getElementById('app')
@@ -612,6 +667,7 @@ function render() {
     <main class="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
       ${content}
     </main>
+    ${renderModal()}
     <style>
       .nav-btn {
         padding: 0.5rem 0.75rem;
@@ -660,10 +716,34 @@ function showView(view) {
   render()
 }
 
+// 모달 관리 함수들
+function showEmployeeModal() {
+  document.getElementById('employee-modal').classList.remove('hidden')
+  // 입력 필드 초기화
+  document.getElementById('modal-employee-name').value = ''
+  document.getElementById('modal-employee-department').value = ''
+  // 첫 번째 입력 필드에 포커스
+  setTimeout(() => document.getElementById('modal-employee-name').focus(), 100)
+}
+
+function showVehicleModal() {
+  document.getElementById('vehicle-modal').classList.remove('hidden')
+  // 입력 필드 초기화
+  document.getElementById('modal-vehicle-number').value = ''
+  document.getElementById('modal-vehicle-driver-name').value = ''
+  document.getElementById('modal-vehicle-driver-phone').value = ''
+  // 첫 번째 입력 필드에 포커스
+  setTimeout(() => document.getElementById('modal-vehicle-number').focus(), 100)
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.add('hidden')
+}
+
 // 직원 관리 함수들
 function createEmployee() {
-  const name = document.getElementById('employee-name').value.trim()
-  const department = document.getElementById('employee-department').value.trim()
+  const name = document.getElementById('modal-employee-name').value.trim()
+  const department = document.getElementById('modal-employee-department').value.trim()
   
   if (!name || !department) {
     alert('이름과 부서를 모두 입력해주세요.')
@@ -673,8 +753,7 @@ function createEmployee() {
   api.createEmployee({ name, department })
     .then(() => {
       alert('직원이 추가되었습니다.')
-      document.getElementById('employee-name').value = ''
-      document.getElementById('employee-department').value = ''
+      closeModal('employee-modal')
       loadData()
     })
     .catch(err => {
@@ -716,9 +795,9 @@ function deleteEmployee(id) {
 
 // 차량 관리 함수들
 function createVehicle() {
-  const vehicle_number = document.getElementById('vehicle-number').value.trim()
-  const driver_name = document.getElementById('vehicle-driver-name').value.trim()
-  const driver_phone = document.getElementById('vehicle-driver-phone').value.trim()
+  const vehicle_number = document.getElementById('modal-vehicle-number').value.trim()
+  const driver_name = document.getElementById('modal-vehicle-driver-name').value.trim()
+  const driver_phone = document.getElementById('modal-vehicle-driver-phone').value.trim()
   
   if (!vehicle_number || !driver_name || !driver_phone) {
     alert('모든 항목을 입력해주세요.')
@@ -728,9 +807,7 @@ function createVehicle() {
   api.createVehicle({ vehicle_number, driver_name, driver_phone })
     .then(() => {
       alert('차량이 추가되었습니다.')
-      document.getElementById('vehicle-number').value = ''
-      document.getElementById('vehicle-driver-name').value = ''
-      document.getElementById('vehicle-driver-phone').value = ''
+      closeModal('vehicle-modal')
       loadData()
     })
     .catch(err => {

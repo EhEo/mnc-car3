@@ -18,12 +18,23 @@ boarding.post('/register', async (c) => {
       }, 400)
     }
 
+    // 외부차량 처리
+    const isExternalVehicle = vehicle_id === 'external'
+    
     // 트랜잭션 시뮬레이션 (D1은 아직 명시적 트랜잭션 미지원)
     // 1. 탑승 기록 생성
     for (const employee_id of employee_ids) {
-      await c.env.DB.prepare(
-        'INSERT INTO boarding_records (vehicle_id, employee_id) VALUES (?, ?)'
-      ).bind(vehicle_id, employee_id).run()
+      if (isExternalVehicle) {
+        // 외부차량인 경우 vehicle_id를 NULL로 저장
+        await c.env.DB.prepare(
+          'INSERT INTO boarding_records (vehicle_id, employee_id) VALUES (NULL, ?)'
+        ).bind(employee_id).run()
+      } else {
+        // 회사 차량인 경우
+        await c.env.DB.prepare(
+          'INSERT INTO boarding_records (vehicle_id, employee_id) VALUES (?, ?)'
+        ).bind(vehicle_id, employee_id).run()
+      }
       
       // 2. 직원 상태 업데이트
       await c.env.DB.prepare(
@@ -31,15 +42,17 @@ boarding.post('/register', async (c) => {
       ).bind('left', employee_id).run()
     }
     
-    // 3. 차량 상태 업데이트
-    await c.env.DB.prepare(
-      'UPDATE vehicles SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-    ).bind('driving', vehicle_id).run()
+    // 3. 차량 상태 업데이트 (외부차량이 아닌 경우에만)
+    if (!isExternalVehicle) {
+      await c.env.DB.prepare(
+        'UPDATE vehicles SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+      ).bind('driving', vehicle_id).run()
+    }
     
     return c.json({ 
       success: true, 
       message: `${employee_ids.length} employees registered for boarding`,
-      data: { vehicle_id, employee_ids }
+      data: { vehicle_id, employee_ids, is_external: isExternalVehicle }
     }, 201)
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500)
@@ -54,12 +67,12 @@ boarding.get('/records', async (c) => {
         br.id,
         br.boarding_date,
         br.boarding_time,
-        v.vehicle_number,
-        v.driver_name,
+        COALESCE(v.vehicle_number, '외부차량') as vehicle_number,
+        COALESCE(v.driver_name, '-') as driver_name,
         e.name as employee_name,
         e.department
       FROM boarding_records br
-      JOIN vehicles v ON br.vehicle_id = v.id
+      LEFT JOIN vehicles v ON br.vehicle_id = v.id
       JOIN employees e ON br.employee_id = e.id
       WHERE br.boarding_date = DATE('now')
       ORDER BY br.boarding_time DESC
