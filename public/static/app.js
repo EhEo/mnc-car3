@@ -636,6 +636,122 @@ function renderModal() {
         </div>
       </div>
     </div>
+    
+    <!-- 직원 수정 모달 -->
+    <div id="employee-edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-user-edit mr-2 text-blue-600"></i>직원 수정
+          </h3>
+          <button onclick="closeModal('employee-edit-modal')" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <input type="hidden" id="edit-employee-id" />
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">이름</label>
+            <input 
+              type="text" 
+              id="edit-employee-name" 
+              placeholder="홍길동"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">부서</label>
+            <input 
+              type="text" 
+              id="edit-employee-department" 
+              placeholder="개발팀"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">상태</label>
+            <select 
+              id="edit-employee-status" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="working">근무중</option>
+              <option value="left">퇴근완료</option>
+            </select>
+          </div>
+          <div class="flex justify-end gap-2 mt-6">
+            <button onclick="closeModal('employee-edit-modal')" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+              취소
+            </button>
+            <button onclick="updateEmployee()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              <i class="fas fa-save mr-2"></i>저장
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 차량 수정 모달 -->
+    <div id="vehicle-edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-car mr-2 text-blue-600"></i>차량 수정
+          </h3>
+          <button onclick="closeModal('vehicle-edit-modal')" class="text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <input type="hidden" id="edit-vehicle-id" />
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">차량번호</label>
+            <input 
+              type="text" 
+              id="edit-vehicle-number" 
+              placeholder="12가3456"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">기사명</label>
+            <input 
+              type="text" 
+              id="edit-vehicle-driver-name" 
+              placeholder="홍길동"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">전화번호</label>
+            <input 
+              type="text" 
+              id="edit-vehicle-driver-phone" 
+              placeholder="010-1234-5678"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">상태</label>
+            <select 
+              id="edit-vehicle-status" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="waiting">운행대기</option>
+              <option value="driving">운행중</option>
+              <option value="completed">퇴근완료</option>
+            </select>
+          </div>
+          <div class="flex justify-end gap-2 mt-6">
+            <button onclick="closeModal('vehicle-edit-modal')" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+              취소
+            </button>
+            <button onclick="updateVehicle()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              <i class="fas fa-save mr-2"></i>저장
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   `
 }
 
@@ -762,17 +878,34 @@ function createEmployee() {
 }
 
 function editEmployee(emp) {
-  const name = prompt('직원 이름:', emp.name)
-  if (!name) return
+  // 수정 모달 열기
+  document.getElementById('employee-edit-modal').classList.remove('hidden')
   
-  const department = prompt('부서:', emp.department)
-  if (!department) return
+  // 데이터 채우기
+  document.getElementById('edit-employee-id').value = emp.id
+  document.getElementById('edit-employee-name').value = emp.name
+  document.getElementById('edit-employee-department').value = emp.department
+  document.getElementById('edit-employee-status').value = emp.status
   
-  const status = confirm('근무 중 상태로 설정하시겠습니까? (취소 시 퇴근완료)') ? 'working' : 'left'
+  // 첫 번째 입력 필드에 포커스
+  setTimeout(() => document.getElementById('edit-employee-name').focus(), 100)
+}
+
+function updateEmployee() {
+  const id = document.getElementById('edit-employee-id').value
+  const name = document.getElementById('edit-employee-name').value.trim()
+  const department = document.getElementById('edit-employee-department').value.trim()
+  const status = document.getElementById('edit-employee-status').value
   
-  api.updateEmployee(emp.id, { name, department, status })
+  if (!name || !department) {
+    alert('이름과 부서를 모두 입력해주세요.')
+    return
+  }
+  
+  api.updateEmployee(id, { name, department, status })
     .then(() => {
       alert('직원 정보가 수정되었습니다.')
+      closeModal('employee-edit-modal')
       loadData()
     })
     .catch(err => {
@@ -816,25 +949,36 @@ function createVehicle() {
 }
 
 function editVehicle(vehicle) {
-  const vehicle_number = prompt('차량번호:', vehicle.vehicle_number)
-  if (!vehicle_number) return
+  // 수정 모달 열기
+  document.getElementById('vehicle-edit-modal').classList.remove('hidden')
   
-  const driver_name = prompt('기사 이름:', vehicle.driver_name)
-  if (!driver_name) return
+  // 데이터 채우기
+  document.getElementById('edit-vehicle-id').value = vehicle.id
+  document.getElementById('edit-vehicle-number').value = vehicle.vehicle_number
+  document.getElementById('edit-vehicle-driver-name').value = vehicle.driver_name
+  document.getElementById('edit-vehicle-driver-phone').value = vehicle.driver_phone
+  document.getElementById('edit-vehicle-status').value = vehicle.status
   
-  const driver_phone = prompt('전화번호:', vehicle.driver_phone)
-  if (!driver_phone) return
+  // 첫 번째 입력 필드에 포커스
+  setTimeout(() => document.getElementById('edit-vehicle-number').focus(), 100)
+}
+
+function updateVehicle() {
+  const id = document.getElementById('edit-vehicle-id').value
+  const vehicle_number = document.getElementById('edit-vehicle-number').value.trim()
+  const driver_name = document.getElementById('edit-vehicle-driver-name').value.trim()
+  const driver_phone = document.getElementById('edit-vehicle-driver-phone').value.trim()
+  const status = document.getElementById('edit-vehicle-status').value
   
-  const statusMap = { 'waiting': 0, 'driving': 1, 'completed': 2 }
-  const statusOptions = ['운행대기(waiting)', '운행중(driving)', '퇴근완료(completed)']
-  const statusInput = prompt('상태 선택:\n0: 운행대기\n1: 운행중\n2: 퇴근완료', '0')
+  if (!vehicle_number || !driver_name || !driver_phone) {
+    alert('모든 항목을 입력해주세요.')
+    return
+  }
   
-  const statusValues = ['waiting', 'driving', 'completed']
-  const status = statusValues[parseInt(statusInput)] || 'waiting'
-  
-  api.updateVehicle(vehicle.id, { vehicle_number, driver_name, driver_phone, status })
+  api.updateVehicle(id, { vehicle_number, driver_name, driver_phone, status })
     .then(() => {
       alert('차량 정보가 수정되었습니다.')
+      closeModal('vehicle-edit-modal')
       loadData()
     })
     .catch(err => {
