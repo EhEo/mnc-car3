@@ -105,22 +105,25 @@ function renderNav() {
     <nav class="bg-white shadow-sm border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <div class="flex flex-col sm:flex-row justify-between items-center py-3 sm:py-0 sm:h-16">
-          <div class="flex items-center mb-2 sm:mb-0">
-            <i class="fas fa-car text-blue-600 text-xl sm:text-2xl mr-2"></i>
-            <h1 class="text-lg sm:text-xl font-bold text-gray-900">차량 관리 시스템</h1>
+          <div class="flex items-center justify-center mb-3 sm:mb-0">
+            <i class="fas fa-car text-blue-600 text-3xl sm:text-2xl mr-2 sm:mr-3"></i>
+            <h1 class="text-xl sm:text-xl font-bold text-gray-900">차량관리</h1>
           </div>
           <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto justify-center">
             <button onclick="showView('dashboard')" class="nav-btn ${state.currentView === 'dashboard' ? 'active' : ''}">
-              <i class="fas fa-chart-line sm:mr-2"></i><span class="hidden sm:inline">대시보드</span>
-            </button>
-            <button onclick="showView('employees')" class="nav-btn ${state.currentView === 'employees' ? 'active' : ''}">
-              <i class="fas fa-users sm:mr-2"></i><span class="hidden sm:inline">직원 관리</span>
-            </button>
-            <button onclick="showView('vehicles')" class="nav-btn ${state.currentView === 'vehicles' ? 'active' : ''}">
-              <i class="fas fa-car sm:mr-2"></i><span class="hidden sm:inline">차량 관리</span>
+              <i class="fas fa-chart-line text-lg sm:text-base sm:mr-2"></i><span class="hidden sm:inline">대시보드</span>
             </button>
             <button onclick="showView('boarding')" class="nav-btn ${state.currentView === 'boarding' ? 'active' : ''}">
-              <i class="fas fa-clipboard-check sm:mr-2"></i><span class="hidden sm:inline">퇴근 등록</span>
+              <i class="fas fa-clipboard-check text-lg sm:text-base sm:mr-2 text-green-600"></i><span class="hidden sm:inline">퇴근등록</span>
+            </button>
+            <button onclick="showView('employees')" class="nav-btn ${state.currentView === 'employees' ? 'active' : ''}">
+              <i class="fas fa-users text-lg sm:text-base sm:mr-2"></i><span class="hidden sm:inline">직원관리</span>
+            </button>
+            <button onclick="showView('vehicles')" class="nav-btn ${state.currentView === 'vehicles' ? 'active' : ''}">
+              <i class="fas fa-car text-lg sm:text-base sm:mr-2"></i><span class="hidden sm:inline">차량관리</span>
+            </button>
+            <button onclick="showView('records')" class="nav-btn ${state.currentView === 'records' ? 'active' : ''}">
+              <i class="fas fa-history text-lg sm:text-base sm:mr-2"></i><span class="hidden sm:inline">탑승기록</span>
             </button>
           </div>
         </div>
@@ -195,42 +198,61 @@ function renderDashboard() {
         </div>
       </div>
       
-      <!-- 오늘의 탑승 기록 -->
+      <!-- 오늘의 탑승 기록 (간략) -->
       <div class="bg-white rounded-lg shadow">
-        <div class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-gray-200">
+        <div class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 border-b border-gray-200 flex justify-between items-center">
           <h3 class="text-base sm:text-lg font-semibold text-gray-900">
             <i class="fas fa-history mr-2 text-blue-600"></i>오늘의 탑승 기록
           </h3>
+          <button onclick="showView('records')" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+            전체보기 <i class="fas fa-arrow-right ml-1"></i>
+          </button>
         </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">시간</th>
-                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">차량번호</th>
-                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">기사명</th>
-                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">직원명</th>
-                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">부서</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              ${state.boardingRecords.length === 0 ? `
-                <tr>
-                  <td colspan="5" class="px-3 sm:px-6 py-4 text-center text-gray-500 text-sm">오늘의 탑승 기록이 없습니다</td>
-                </tr>
-              ` : state.boardingRecords.map(record => `
-                <tr>
-                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
-                    ${new Date(record.boarding_time).toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})}
-                  </td>
-                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${record.vehicle_number}</td>
-                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${record.driver_name}</td>
-                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${record.employee_name}</td>
-                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">${record.department}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
+        <div class="p-4 sm:p-6">
+          ${state.boardingRecords.length === 0 ? `
+            <p class="text-center text-gray-500 text-sm py-4">오늘의 탑승 기록이 없습니다</p>
+          ` : `
+            <div class="space-y-3">
+              ${(() => {
+                // 차량별로 그룹화
+                const groupedRecords = state.boardingRecords.reduce((acc, record) => {
+                  const key = record.vehicle_number;
+                  if (!acc[key]) {
+                    acc[key] = {
+                      vehicle_number: record.vehicle_number,
+                      driver_name: record.driver_name,
+                      employees: [],
+                      time: record.boarding_time
+                    };
+                  }
+                  acc[key].employees.push(record.employee_name);
+                  return acc;
+                }, {});
+                
+                return Object.values(groupedRecords).map(group => `
+                  <div class="border-l-4 border-blue-500 bg-blue-50 p-3 sm:p-4 rounded-r-lg">
+                    <div class="flex justify-between items-start mb-2">
+                      <div>
+                        <div class="font-semibold text-gray-900 text-sm sm:text-base">
+                          <i class="fas fa-car mr-2"></i>${group.vehicle_number} (${group.driver_name})
+                        </div>
+                        <div class="text-xs sm:text-sm text-gray-600 mt-1">
+                          <i class="fas fa-clock mr-1"></i>${new Date(group.time).toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})}
+                        </div>
+                      </div>
+                      <div class="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                        ${group.employees.length}명
+                      </div>
+                    </div>
+                    <div class="text-xs sm:text-sm text-gray-700 mt-2">
+                      <i class="fas fa-users mr-1"></i>
+                      ${group.employees.join(', ')}
+                    </div>
+                  </div>
+                `).join('');
+              })()}
+            </div>
+          `}
         </div>
       </div>
       
@@ -259,16 +281,47 @@ function renderDashboard() {
 function renderEmployees() {
   return `
     <div class="space-y-4 sm:space-y-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
-          <i class="fas fa-users mr-2 text-blue-600"></i>직원 관리
-        </h2>
-        <button onclick="showEmployeeModal()" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition">
-          <i class="fas fa-plus mr-2"></i>직원 추가
-        </button>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+        <i class="fas fa-users mr-2 text-blue-600"></i>직원 관리
+      </h2>
+      
+      <!-- 직원 등록 폼 -->
+      <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-user-plus mr-2 text-blue-600"></i>직원 등록
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">이름</label>
+            <input 
+              type="text" 
+              id="employee-name" 
+              placeholder="홍길동"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">부서</label>
+            <input 
+              type="text" 
+              id="employee-department" 
+              placeholder="개발팀"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button onclick="createEmployee()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            <i class="fas fa-plus mr-2"></i>직원 추가
+          </button>
+        </div>
       </div>
       
+      <!-- 직원 목록 -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+          <h3 class="text-base font-semibold text-gray-900">직원 목록</h3>
+        </div>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -282,7 +335,7 @@ function renderEmployees() {
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               ${state.employees.map(emp => `
-                <tr>
+                <tr class="hover:bg-gray-50">
                   <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">${emp.name}</td>
                   <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">${emp.department}</td>
                   <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm">${getStatusBadge(emp.status, 'employee')}</td>
@@ -311,16 +364,56 @@ function renderEmployees() {
 function renderVehicles() {
   return `
     <div class="space-y-4 sm:space-y-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
-          <i class="fas fa-car mr-2 text-blue-600"></i>차량 관리
-        </h2>
-        <button onclick="showVehicleModal()" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition">
-          <i class="fas fa-plus mr-2"></i>차량 추가
-        </button>
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+        <i class="fas fa-car mr-2 text-blue-600"></i>차량 관리
+      </h2>
+      
+      <!-- 차량 등록 폼 -->
+      <div class="bg-white rounded-lg shadow p-4 sm:p-6">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4">
+          <i class="fas fa-plus-circle mr-2 text-blue-600"></i>차량 등록
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">차량번호</label>
+            <input 
+              type="text" 
+              id="vehicle-number" 
+              placeholder="12가3456"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">기사명</label>
+            <input 
+              type="text" 
+              id="vehicle-driver-name" 
+              placeholder="홍길동"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">전화번호</label>
+            <input 
+              type="text" 
+              id="vehicle-driver-phone" 
+              placeholder="010-1234-5678"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button onclick="createVehicle()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            <i class="fas fa-plus mr-2"></i>차량 추가
+          </button>
+        </div>
       </div>
       
+      <!-- 차량 목록 -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+          <h3 class="text-base font-semibold text-gray-900">차량 목록</h3>
+        </div>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -335,7 +428,7 @@ function renderVehicles() {
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               ${state.vehicles.map(vehicle => `
-                <tr>
+                <tr class="hover:bg-gray-50">
                   <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">${vehicle.vehicle_number}</td>
                   <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${vehicle.driver_name}</td>
                   <td class="hidden sm:table-cell px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">${vehicle.driver_phone}</td>
@@ -444,6 +537,53 @@ function renderBoarding() {
   `
 }
 
+// 탑승기록 전체보기 뷰
+function renderRecords() {
+  return `
+    <div class="space-y-4 sm:space-y-6">
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+        <i class="fas fa-history mr-2 text-blue-600"></i>탑승 기록
+      </h2>
+      
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">시간</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">차량번호</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">기사명</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">직원명</th>
+                <th class="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">부서</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${state.boardingRecords.length === 0 ? `
+                <tr>
+                  <td colspan="5" class="px-3 sm:px-6 py-8 text-center text-gray-500 text-sm">
+                    <i class="fas fa-inbox text-4xl text-gray-300 mb-2"></i>
+                    <p>오늘의 탑승 기록이 없습니다</p>
+                  </td>
+                </tr>
+              ` : state.boardingRecords.map(record => `
+                <tr class="hover:bg-gray-50">
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                    ${new Date(record.boarding_time).toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})}
+                  </td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">${record.vehicle_number}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${record.driver_name}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${record.employee_name}</td>
+                  <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">${record.department}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `
+}
+
 // 렌더링
 function render() {
   const app = document.getElementById('app')
@@ -461,6 +601,9 @@ function render() {
       break
     case 'boarding':
       content = renderBoarding()
+      break
+    case 'records':
+      content = renderRecords()
       break
   }
   
@@ -490,6 +633,9 @@ function render() {
         background-color: #3B82F6;
         color: white;
       }
+      .nav-btn.active i {
+        color: white !important;
+      }
       
       /* 모바일에서 테이블 스크롤 부드럽게 */
       .overflow-x-auto {
@@ -515,16 +661,20 @@ function showView(view) {
 }
 
 // 직원 관리 함수들
-function showEmployeeModal() {
-  const name = prompt('직원 이름:')
-  if (!name) return
+function createEmployee() {
+  const name = document.getElementById('employee-name').value.trim()
+  const department = document.getElementById('employee-department').value.trim()
   
-  const department = prompt('부서:')
-  if (!department) return
+  if (!name || !department) {
+    alert('이름과 부서를 모두 입력해주세요.')
+    return
+  }
   
   api.createEmployee({ name, department })
     .then(() => {
       alert('직원이 추가되었습니다.')
+      document.getElementById('employee-name').value = ''
+      document.getElementById('employee-department').value = ''
       loadData()
     })
     .catch(err => {
@@ -565,19 +715,22 @@ function deleteEmployee(id) {
 }
 
 // 차량 관리 함수들
-function showVehicleModal() {
-  const vehicle_number = prompt('차량번호:')
-  if (!vehicle_number) return
+function createVehicle() {
+  const vehicle_number = document.getElementById('vehicle-number').value.trim()
+  const driver_name = document.getElementById('vehicle-driver-name').value.trim()
+  const driver_phone = document.getElementById('vehicle-driver-phone').value.trim()
   
-  const driver_name = prompt('기사 이름:')
-  if (!driver_name) return
-  
-  const driver_phone = prompt('전화번호:')
-  if (!driver_phone) return
+  if (!vehicle_number || !driver_name || !driver_phone) {
+    alert('모든 항목을 입력해주세요.')
+    return
+  }
   
   api.createVehicle({ vehicle_number, driver_name, driver_phone })
     .then(() => {
       alert('차량이 추가되었습니다.')
+      document.getElementById('vehicle-number').value = ''
+      document.getElementById('vehicle-driver-name').value = ''
+      document.getElementById('vehicle-driver-phone').value = ''
       loadData()
     })
     .catch(err => {
