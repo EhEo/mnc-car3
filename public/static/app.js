@@ -88,12 +88,16 @@ function getStatusBadge(status, type) {
   const badges = {
     employee: {
       working: '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">근무중</span>',
-      left: '<span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">퇴근완료</span>'
+      left: '<span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">퇴근완료</span>',
+      business_trip: '<span class="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-800">출장중</span>',
+      vacation: '<span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">휴가중</span>'
     },
     vehicle: {
       waiting: '<span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">운행대기</span>',
       driving: '<span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">운행중</span>',
-      completed: '<span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">퇴근완료</span>'
+      completed: '<span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">퇴근완료</span>',
+      repair: '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">수리중</span>',
+      out: '<span class="px-2 py-1 text-xs rounded-full bg-indigo-100 text-indigo-800">외근중</span>'
     }
   }
   return badges[type][status] || status
@@ -104,26 +108,26 @@ function renderNav() {
   return `
     <nav class="bg-white shadow-sm border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-        <div class="flex flex-col sm:flex-row justify-between items-center py-3 sm:py-0 sm:h-16">
-          <div class="flex items-center justify-center mb-3 sm:mb-0">
-            <i class="fas fa-car text-blue-600 text-3xl sm:text-2xl mr-2 sm:mr-3"></i>
-            <h1 class="text-xl sm:text-xl font-bold text-gray-900">차량관리</h1>
+        <div class="flex justify-between items-center h-14 sm:h-16">
+          <div class="flex items-center">
+            <i class="fas fa-car text-blue-600 text-2xl sm:text-2xl mr-2"></i>
+            <h1 class="text-base sm:text-xl font-bold text-gray-900">차량관리</h1>
           </div>
-          <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto w-full sm:w-auto justify-center">
+          <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto">
             <button onclick="showView('dashboard')" class="nav-btn ${state.currentView === 'dashboard' ? 'active' : ''}">
-              <i class="fas fa-chart-line text-lg sm:text-base sm:mr-2"></i><span class="hidden sm:inline">대시보드</span>
+              <i class="fas fa-chart-line text-base sm:text-base sm:mr-2"></i><span class="hidden sm:inline">대시보드</span>
             </button>
             <button onclick="showView('boarding')" class="nav-btn ${state.currentView === 'boarding' ? 'active' : ''}">
-              <i class="fas fa-clipboard-check text-lg sm:text-base sm:mr-2 text-green-600"></i><span class="hidden sm:inline">퇴근등록</span>
+              <i class="fas fa-clipboard-check text-base sm:text-base sm:mr-2 text-green-600"></i><span class="hidden sm:inline">퇴근등록</span>
             </button>
             <button onclick="showView('employees')" class="nav-btn ${state.currentView === 'employees' ? 'active' : ''}">
-              <i class="fas fa-users text-lg sm:text-base sm:mr-2"></i><span class="hidden sm:inline">직원관리</span>
+              <i class="fas fa-users text-base sm:text-base sm:mr-2"></i><span class="hidden sm:inline">직원관리</span>
             </button>
             <button onclick="showView('vehicles')" class="nav-btn ${state.currentView === 'vehicles' ? 'active' : ''}">
-              <i class="fas fa-car text-lg sm:text-base sm:mr-2"></i><span class="hidden sm:inline">차량관리</span>
+              <i class="fas fa-car text-base sm:text-base sm:mr-2"></i><span class="hidden sm:inline">차량관리</span>
             </button>
             <button onclick="showView('records')" class="nav-btn ${state.currentView === 'records' ? 'active' : ''}">
-              <i class="fas fa-history text-lg sm:text-base sm:mr-2"></i><span class="hidden sm:inline">탑승기록</span>
+              <i class="fas fa-history text-base sm:text-base sm:mr-2"></i><span class="hidden sm:inline">탑승기록</span>
             </button>
           </div>
         </div>
@@ -410,26 +414,6 @@ function renderBoarding() {
               <i class="fas fa-car mr-2"></i>차량 선택
             </label>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              <!-- 외부차량 (고정) -->
-              <div 
-                onclick="selectVehicle('external')"
-                class="border-2 rounded-lg p-3 sm:p-4 cursor-pointer transition ${
-                  state.selectedVehicle === 'external' 
-                    ? 'border-purple-600 bg-purple-50' 
-                    : 'border-purple-200 hover:border-purple-300'
-                }"
-              >
-                <div class="font-semibold text-sm sm:text-base text-purple-900">
-                  <i class="fas fa-car-side mr-2"></i>외부차량
-                </div>
-                <div class="text-xs sm:text-sm text-purple-700 mt-1">
-                  회사 차량 미사용
-                </div>
-                <div class="text-xs text-purple-600 mt-1">
-                  <i class="fas fa-info-circle mr-1"></i>개인 차량 또는 대중교통
-                </div>
-              </div>
-              
               ${availableVehicles.length === 0 ? `
                 <p class="text-gray-500 text-sm col-span-full text-center py-4">운행 대기 중인 회사 차량이 없습니다</p>
               ` : availableVehicles.map(vehicle => `
@@ -450,6 +434,26 @@ function renderBoarding() {
                   </div>
                 </div>
               `).join('')}
+              
+              <!-- 외부차량 (가장 아래) -->
+              <div 
+                onclick="selectVehicle('external')"
+                class="border-2 rounded-lg p-3 sm:p-4 cursor-pointer transition ${
+                  state.selectedVehicle === 'external' 
+                    ? 'border-purple-600 bg-purple-50' 
+                    : 'border-purple-200 hover:border-purple-300'
+                }"
+              >
+                <div class="font-semibold text-sm sm:text-base text-purple-900">
+                  <i class="fas fa-car-side mr-2"></i>외부차량
+                </div>
+                <div class="text-xs sm:text-sm text-purple-700 mt-1">
+                  회사 차량 미사용
+                </div>
+                <div class="text-xs text-purple-600 mt-1">
+                  <i class="fas fa-info-circle mr-1"></i>개인 차량 또는 대중교통
+                </div>
+              </div>
             </div>
           </div>
           
@@ -496,11 +500,45 @@ function renderBoarding() {
 
 // 탑승기록 전체보기 뷰
 function renderRecords() {
+  const today = new Date().toISOString().split('T')[0]
+  
   return `
     <div class="space-y-4 sm:space-y-6">
-      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
-        <i class="fas fa-history mr-2 text-blue-600"></i>탑승 기록
-      </h2>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+          <i class="fas fa-history mr-2 text-blue-600"></i>탑승 기록
+        </h2>
+      </div>
+      
+      <!-- 기간 검색 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="flex flex-col sm:flex-row gap-3 items-end">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-2">시작일</label>
+            <input 
+              type="date" 
+              id="start-date" 
+              value="${today}"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-2">종료일</label>
+            <input 
+              type="date" 
+              id="end-date" 
+              value="${today}"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <button 
+            onclick="searchRecords()" 
+            class="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            <i class="fas fa-search mr-2"></i>검색
+          </button>
+        </div>
+      </div>
       
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="overflow-x-auto">
@@ -676,6 +714,8 @@ function renderModal() {
             >
               <option value="working">근무중</option>
               <option value="left">퇴근완료</option>
+              <option value="business_trip">출장중</option>
+              <option value="vacation">휴가중</option>
             </select>
           </div>
           <div class="flex justify-end gap-2 mt-6">
@@ -737,8 +777,9 @@ function renderModal() {
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="waiting">운행대기</option>
-              <option value="driving">운행중</option>
               <option value="completed">퇴근완료</option>
+              <option value="repair">수리중</option>
+              <option value="out">외근중</option>
             </select>
           </div>
           <div class="flex justify-end gap-2 mt-6">
@@ -1050,6 +1091,37 @@ function resetSystem() {
     .catch(err => {
       alert('초기화 실패: ' + err.message)
     })
+}
+
+// 기간별 탑승 기록 검색
+async function searchRecords() {
+  const startDate = document.getElementById('start-date').value
+  const endDate = document.getElementById('end-date').value
+  
+  if (!startDate || !endDate) {
+    alert('시작일과 종료일을 모두 선택해주세요.')
+    return
+  }
+  
+  if (new Date(startDate) > new Date(endDate)) {
+    alert('시작일이 종료일보다 늦을 수 없습니다.')
+    return
+  }
+  
+  try {
+    const res = await axios.get(`/api/boarding/records?start_date=${startDate}&end_date=${endDate}`)
+    state.boardingRecords = res.data.data || []
+    render()
+    
+    // 검색 결과 알림
+    const recordCount = state.boardingRecords.length
+    if (recordCount === 0) {
+      alert('해당 기간에 탑승 기록이 없습니다.')
+    }
+  } catch (error) {
+    console.error('기록 검색 실패:', error)
+    alert('기록 검색에 실패했습니다.')
+  }
 }
 
 // 앱 시작

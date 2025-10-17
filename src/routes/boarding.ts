@@ -59,9 +59,12 @@ boarding.post('/register', async (c) => {
   }
 })
 
-// 탑승 기록 조회 (오늘)
+// 탑승 기록 조회 (기간 검색)
 boarding.get('/records', async (c) => {
   try {
+    const startDate = c.req.query('start_date') || new Date().toISOString().split('T')[0]
+    const endDate = c.req.query('end_date') || new Date().toISOString().split('T')[0]
+    
     const { results } = await c.env.DB.prepare(`
       SELECT 
         br.id,
@@ -74,9 +77,9 @@ boarding.get('/records', async (c) => {
       FROM boarding_records br
       LEFT JOIN vehicles v ON br.vehicle_id = v.id
       JOIN employees e ON br.employee_id = e.id
-      WHERE br.boarding_date = DATE('now')
+      WHERE br.boarding_date BETWEEN ? AND ?
       ORDER BY br.boarding_time DESC
-    `).all()
+    `).bind(startDate, endDate).all()
     
     return c.json({ success: true, data: results })
   } catch (error) {
@@ -128,20 +131,15 @@ boarding.get('/stats', async (c) => {
 // 시스템 초기화 (모든 상태를 초기값으로)
 boarding.post('/reset', async (c) => {
   try {
-    // 모든 직원 상태를 'working'으로
+    // 퇴근완료 직원만 근무중으로 (출장중, 휴가중은 유지)
     await c.env.DB.prepare(
-      'UPDATE employees SET status = ?, updated_at = CURRENT_TIMESTAMP'
-    ).bind('working').run()
+      'UPDATE employees SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE status = ?'
+    ).bind('working', 'left').run()
     
-    // 모든 차량 상태를 'waiting'으로
+    // 퇴근완료, 운행중 차량만 운행대기로 (수리중, 외근중은 유지)
     await c.env.DB.prepare(
-      'UPDATE vehicles SET status = ?, updated_at = CURRENT_TIMESTAMP'
-    ).bind('waiting').run()
-    
-    // 오늘의 탑승 기록 삭제 (선택사항)
-    // await c.env.DB.prepare(
-    //   'DELETE FROM boarding_records WHERE boarding_date = DATE("now")'
-    // ).run()
+      'UPDATE vehicles SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE status IN (?, ?)'
+    ).bind('waiting', 'completed', 'driving').run()
     
     return c.json({ 
       success: true, 

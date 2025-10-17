@@ -10,7 +10,7 @@ const employees = new Hono<{ Bindings: Bindings }>()
 employees.get('/', async (c) => {
   try {
     const { results } = await c.env.DB.prepare(
-      'SELECT * FROM employees ORDER BY created_at DESC'
+      'SELECT * FROM employees ORDER BY id ASC'
     ).all()
     
     return c.json({ success: true, data: results })
