@@ -197,35 +197,47 @@ reports.get('/daily', async (c) => {
 // 종합 대시보드 통계
 reports.get('/dashboard', async (c) => {
   try {
-    // 오늘 통계
+    // 베트남 시간 (UTC+7) 계산
+    const vietnamTime = new Date(Date.now() + 7 * 60 * 60 * 1000)
+    const vietnamDate = vietnamTime.toISOString().split('T')[0]
+    
+    // 이번 주 시작일 (베트남 시간 기준 월요일)
+    const dayOfWeek = vietnamTime.getDay()
+    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+    const weekStart = new Date(vietnamTime.getTime() - daysFromMonday * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    
+    // 이번 달 시작일 (베트남 시간 기준)
+    const monthStart = vietnamDate.substring(0, 8) + '01'
+    
+    // 오늘 통계 (베트남 시간 기준)
     const { results: today } = await c.env.DB.prepare(`
       SELECT 
         COUNT(*) as boarding_count,
         COUNT(DISTINCT employee_id) as employee_count,
         COUNT(DISTINCT vehicle_id) as vehicle_count
       FROM boarding_records
-      WHERE boarding_date = DATE('now')
-    `).all()
+      WHERE boarding_date = ?
+    `).bind(vietnamDate).all()
     
-    // 이번 주 통계
+    // 이번 주 통계 (베트남 시간 기준)
     const { results: thisWeek } = await c.env.DB.prepare(`
       SELECT 
         COUNT(*) as boarding_count,
         COUNT(DISTINCT employee_id) as employee_count,
         COUNT(DISTINCT vehicle_id) as vehicle_count
       FROM boarding_records
-      WHERE boarding_date >= DATE('now', 'weekday 0', '-6 days')
-    `).all()
+      WHERE boarding_date >= ?
+    `).bind(weekStart).all()
     
-    // 이번 달 통계
+    // 이번 달 통계 (베트남 시간 기준)
     const { results: thisMonth } = await c.env.DB.prepare(`
       SELECT 
         COUNT(*) as boarding_count,
         COUNT(DISTINCT employee_id) as employee_count,
         COUNT(DISTINCT vehicle_id) as vehicle_count
       FROM boarding_records
-      WHERE boarding_date >= DATE('now', 'start of month')
-    `).all()
+      WHERE boarding_date >= ?
+    `).bind(monthStart).all()
     
     // 전체 통계
     const { results: total } = await c.env.DB.prepare(`

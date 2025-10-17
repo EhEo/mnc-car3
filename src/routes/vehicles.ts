@@ -49,9 +49,12 @@ vehicles.post('/', async (c) => {
       }, 400)
     }
     
+    // 베트남 시간 (UTC+7)
+    const vietnamTime = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString()
+    
     const result = await c.env.DB.prepare(
-      'INSERT INTO vehicles (vehicle_number, driver_name, driver_phone, status) VALUES (?, ?, ?, ?)'
-    ).bind(vehicle_number, driver_name, driver_phone, 'waiting').run()
+      'INSERT INTO vehicles (vehicle_number, driver_name, driver_phone, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)'
+    ).bind(vehicle_number, driver_name, driver_phone, 'waiting', vietnamTime, vietnamTime).run()
     
     return c.json({ 
       success: true, 
@@ -81,9 +84,12 @@ vehicles.put('/:id', async (c) => {
       }, 400)
     }
     
+    // 베트남 시간 (UTC+7)
+    const vietnamTime = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString()
+    
     await c.env.DB.prepare(
-      'UPDATE vehicles SET vehicle_number = ?, driver_name = ?, driver_phone = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-    ).bind(vehicle_number, driver_name, driver_phone, status, id).run()
+      'UPDATE vehicles SET vehicle_number = ?, driver_name = ?, driver_phone = ?, status = ?, updated_at = ? WHERE id = ?'
+    ).bind(vehicle_number, driver_name, driver_phone, status, vietnamTime, id).run()
     
     return c.json({ 
       success: true, 

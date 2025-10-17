@@ -46,9 +46,12 @@ employees.post('/', async (c) => {
       return c.json({ success: false, error: 'Name and department are required' }, 400)
     }
     
+    // 베트남 시간 (UTC+7)
+    const vietnamTime = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString()
+    
     const result = await c.env.DB.prepare(
-      'INSERT INTO employees (name, department, status) VALUES (?, ?, ?)'
-    ).bind(name, department, 'working').run()
+      'INSERT INTO employees (name, department, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?)'
+    ).bind(name, department, 'working', vietnamTime, vietnamTime).run()
     
     return c.json({ 
       success: true, 
@@ -74,9 +77,12 @@ employees.put('/:id', async (c) => {
       return c.json({ success: false, error: 'Name, department, and status are required' }, 400)
     }
     
+    // 베트남 시간 (UTC+7)
+    const vietnamTime = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString()
+    
     await c.env.DB.prepare(
-      'UPDATE employees SET name = ?, department = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-    ).bind(name, department, status, id).run()
+      'UPDATE employees SET name = ?, department = ?, status = ?, updated_at = ? WHERE id = ?'
+    ).bind(name, department, status, vietnamTime, id).run()
     
     return c.json({ 
       success: true, 

@@ -21,32 +21,38 @@ boarding.post('/register', async (c) => {
     // 외부차량 처리
     const isExternalVehicle = vehicle_id === 'external'
     
+    // 베트남 시간 (UTC+7) 계산
+    const vietnamTime = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString()
+    const vietnamDate = vietnamTime.split('T')[0]
+    
     // 트랜잭션 시뮬레이션 (D1은 아직 명시적 트랜잭션 미지원)
-    // 1. 탑승 기록 생성
+    // 1. 탑승 기록 생성 (베트남 시간으로)
     for (const employee_id of employee_ids) {
       if (isExternalVehicle) {
         // 외부차량인 경우 vehicle_id를 NULL로 저장
         await c.env.DB.prepare(
-          'INSERT INTO boarding_records (vehicle_id, employee_id) VALUES (NULL, ?)'
-        ).bind(employee_id).run()
+          `INSERT INTO boarding_records (vehicle_id, employee_id, boarding_date, boarding_time, created_at) 
+           VALUES (NULL, ?, ?, ?, ?)`
+        ).bind(employee_id, vietnamDate, vietnamTime, vietnamTime).run()
       } else {
         // 회사 차량인 경우
         await c.env.DB.prepare(
-          'INSERT INTO boarding_records (vehicle_id, employee_id) VALUES (?, ?)'
-        ).bind(vehicle_id, employee_id).run()
+          `INSERT INTO boarding_records (vehicle_id, employee_id, boarding_date, boarding_time, created_at) 
+           VALUES (?, ?, ?, ?, ?)`
+        ).bind(vehicle_id, employee_id, vietnamDate, vietnamTime, vietnamTime).run()
       }
       
-      // 2. 직원 상태 업데이트
+      // 2. 직원 상태 업데이트 (베트남 시간으로)
       await c.env.DB.prepare(
-        'UPDATE employees SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-      ).bind('left', employee_id).run()
+        'UPDATE employees SET status = ?, updated_at = ? WHERE id = ?'
+      ).bind('left', vietnamTime, employee_id).run()
     }
     
-    // 3. 차량 상태 업데이트 (외부차량이 아닌 경우에만)
+    // 3. 차량 상태 업데이트 (외부차량이 아닌 경우에만, 베트남 시간으로)
     if (!isExternalVehicle) {
       await c.env.DB.prepare(
-        'UPDATE vehicles SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-      ).bind('driving', vehicle_id).run()
+        'UPDATE vehicles SET status = ?, updated_at = ? WHERE id = ?'
+      ).bind('driving', vietnamTime, vehicle_id).run()
     }
     
     return c.json({ 
@@ -90,6 +96,9 @@ boarding.get('/records', async (c) => {
 // 통계 정보
 boarding.get('/stats', async (c) => {
   try {
+    // 베트남 시간 (UTC+7)의 오늘 날짜
+    const vietnamDate = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().split('T')[0]
+    
     // 직원 상태별 통계
     const { results: employeeStats } = await c.env.DB.prepare(`
       SELECT 
@@ -108,12 +117,12 @@ boarding.get('/stats', async (c) => {
       GROUP BY status
     `).all()
     
-    // 오늘의 탑승 기록 수
+    // 오늘의 탑승 기록 수 (베트남 시간 기준)
     const { results: todayRecords } = await c.env.DB.prepare(`
       SELECT COUNT(*) as count
       FROM boarding_records
-      WHERE boarding_date = DATE('now')
-    `).all()
+      WHERE boarding_date = ?
+    `).bind(vietnamDate).all()
     
     return c.json({ 
       success: true, 
@@ -131,20 +140,24 @@ boarding.get('/stats', async (c) => {
 // 시스템 초기화 (모든 상태를 초기값으로)
 boarding.post('/reset', async (c) => {
   try {
-    // 1. 오늘 날짜의 탑승 기록 삭제
+    // 베트남 시간 (UTC+7) 계산
+    const vietnamTime = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString()
+    const vietnamDate = vietnamTime.split('T')[0]
+    
+    // 1. 오늘 날짜의 탑승 기록 삭제 (베트남 시간 기준)
     const deleteResult = await c.env.DB.prepare(
-      "DELETE FROM boarding_records WHERE boarding_date = DATE('now')"
-    ).run()
+      "DELETE FROM boarding_records WHERE boarding_date = ?"
+    ).bind(vietnamDate).run()
     
-    // 2. 퇴근완료 직원만 근무중으로 (출장중, 휴가중은 유지)
+    // 2. 퇴근완료 직원만 근무중으로 (출장중, 휴가중은 유지, 베트남 시간으로)
     await c.env.DB.prepare(
-      'UPDATE employees SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE status = ?'
-    ).bind('working', 'left').run()
+      'UPDATE employees SET status = ?, updated_at = ? WHERE status = ?'
+    ).bind('working', vietnamTime, 'left').run()
     
-    // 3. 퇴근완료, 운행중 차량만 운행대기로 (수리중, 외근중은 유지)
+    // 3. 퇴근완료, 운행중 차량만 운행대기로 (수리중, 외근중은 유지, 베트남 시간으로)
     await c.env.DB.prepare(
-      'UPDATE vehicles SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE status IN (?, ?)'
-    ).bind('waiting', 'completed', 'driving').run()
+      'UPDATE vehicles SET status = ?, updated_at = ? WHERE status IN (?, ?)'
+    ).bind('waiting', vietnamTime, 'completed', 'driving').run()
     
     return c.json({ 
       success: true, 
