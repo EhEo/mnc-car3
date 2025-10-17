@@ -478,7 +478,7 @@ function renderBoarding() {
             <label class="block text-sm sm:text-base font-medium text-gray-700 mb-3">
               <i class="fas fa-car mr-2"></i>차량 선택
             </label>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="grid grid-cols-2 gap-3">
               ${availableVehicles.length === 0 ? `
                 <p class="text-gray-500 text-sm col-span-full text-center py-4">운행 대기 중인 회사 차량이 없습니다</p>
               ` : availableVehicles.map(vehicle => `
@@ -527,7 +527,7 @@ function renderBoarding() {
             <label class="block text-sm sm:text-base font-medium text-gray-700 mb-3">
               <i class="fas fa-users mr-2"></i>탑승 직원 선택 (다중 선택 가능)
             </label>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
+            <div class="grid grid-cols-3 gap-2 sm:gap-3">
               ${availableEmployees.length === 0 ? `
                 <p class="text-gray-500 text-sm col-span-full text-center py-4">근무 중인 직원이 없습니다</p>
               ` : availableEmployees.map(emp => `
