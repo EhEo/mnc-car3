@@ -165,7 +165,7 @@ function renderNav() {
             <i class="fas fa-car text-blue-600 text-2xl sm:text-2xl mr-2"></i>
             <h1 class="text-base sm:text-xl font-bold text-gray-900 hover:text-blue-600 transition">차량관리</h1>
           </div>
-          <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto">
+          <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto" style="overflow-y: visible;">
             <button onclick="showView('dashboard')" class="nav-btn ${state.currentView === 'dashboard' ? 'active' : ''}">
               <i class="fas fa-chart-line text-base sm:text-base sm:mr-2"></i><span class="hidden sm:inline">대시보드</span>
             </button>
@@ -175,14 +175,14 @@ function renderNav() {
             <button onclick="showView('reports')" class="nav-btn ${state.currentView === 'reports' ? 'active' : ''}">
               <i class="fas fa-chart-bar text-base sm:text-base sm:mr-2 text-purple-600"></i><span class="hidden sm:inline">통계</span>
             </button>
-            <div class="relative">
+            <div class="relative" style="position: static;">
               <button onclick="toggleSettingsMenu()" class="nav-btn ${['employees', 'vehicles', 'records'].includes(state.currentView) ? 'active' : ''}">
                 <i class="fas fa-cog text-base sm:text-base sm:mr-2 text-gray-600"></i><span class="hidden sm:inline">설정</span>
                 <i class="fas fa-chevron-down text-xs ml-1"></i>
               </button>
               ${state.settingsMenuOpen ? `
-                <div class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                  <button onclick="showView('employees')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center ${state.currentView === 'employees' ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}">
+                <div class="fixed right-2 sm:right-4 lg:right-8 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-200" style="z-index: 9999; top: 3.5rem;">
+                  <button onclick="showView('employees')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center rounded-t-lg ${state.currentView === 'employees' ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}">
                     <i class="fas fa-users mr-2"></i>직원관리
                   </button>
                   <button onclick="showView('vehicles')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center ${state.currentView === 'vehicles' ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}">
