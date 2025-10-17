@@ -33,6 +33,7 @@ const state = {
   currentView: 'dashboard',
   selectedVehicle: null,
   selectedEmployees: [],
+  settingsMenuOpen: false,
   reportPeriod: {
     start: new Date(Date.now() - 30*24*60*60*1000).toISOString().split('T')[0],
     end: new Date().toISOString().split('T')[0]
@@ -171,18 +172,28 @@ function renderNav() {
             <button onclick="showView('boarding')" class="nav-btn ${state.currentView === 'boarding' ? 'active' : ''}">
               <i class="fas fa-clipboard-check text-base sm:text-base sm:mr-2 text-green-600"></i><span class="hidden sm:inline">퇴근등록</span>
             </button>
-            <button onclick="showView('employees')" class="nav-btn ${state.currentView === 'employees' ? 'active' : ''}">
-              <i class="fas fa-users text-base sm:text-base sm:mr-2"></i><span class="hidden sm:inline">직원관리</span>
-            </button>
-            <button onclick="showView('vehicles')" class="nav-btn ${state.currentView === 'vehicles' ? 'active' : ''}">
-              <i class="fas fa-car text-base sm:text-base sm:mr-2"></i><span class="hidden sm:inline">차량관리</span>
-            </button>
-            <button onclick="showView('records')" class="nav-btn ${state.currentView === 'records' ? 'active' : ''}">
-              <i class="fas fa-history text-base sm:text-base sm:mr-2"></i><span class="hidden sm:inline">탑승기록</span>
-            </button>
             <button onclick="showView('reports')" class="nav-btn ${state.currentView === 'reports' ? 'active' : ''}">
               <i class="fas fa-chart-bar text-base sm:text-base sm:mr-2 text-purple-600"></i><span class="hidden sm:inline">통계</span>
             </button>
+            <div class="relative">
+              <button onclick="toggleSettingsMenu()" class="nav-btn ${['employees', 'vehicles', 'records'].includes(state.currentView) ? 'active' : ''}">
+                <i class="fas fa-cog text-base sm:text-base sm:mr-2 text-gray-600"></i><span class="hidden sm:inline">설정</span>
+                <i class="fas fa-chevron-down text-xs ml-1"></i>
+              </button>
+              ${state.settingsMenuOpen ? `
+                <div class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                  <button onclick="showView('employees')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center ${state.currentView === 'employees' ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}">
+                    <i class="fas fa-users mr-2"></i>직원관리
+                  </button>
+                  <button onclick="showView('vehicles')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center ${state.currentView === 'vehicles' ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}">
+                    <i class="fas fa-car mr-2"></i>차량관리
+                  </button>
+                  <button onclick="showView('records')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center rounded-b-lg ${state.currentView === 'records' ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}">
+                    <i class="fas fa-history mr-2"></i>탑승기록
+                  </button>
+                </div>
+              ` : ''}
+            </div>
           </div>
         </div>
       </div>
@@ -1117,6 +1128,12 @@ function showView(view) {
   state.currentView = view
   state.selectedVehicle = null
   state.selectedEmployees = []
+  state.settingsMenuOpen = false
+  render()
+}
+
+function toggleSettingsMenu() {
+  state.settingsMenuOpen = !state.settingsMenuOpen
   render()
 }
 
@@ -1410,6 +1427,14 @@ async function loadReports() {
     alert('리포트를 불러오는데 실패했습니다.')
   }
 }
+
+// 외부 클릭 시 설정 메뉴 닫기
+document.addEventListener('click', (e) => {
+  if (state.settingsMenuOpen && !e.target.closest('.relative')) {
+    state.settingsMenuOpen = false
+    render()
+  }
+})
 
 // 앱 시작
 loadData()
