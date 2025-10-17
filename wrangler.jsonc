@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "webapp",
+  "name": "vehicle-management",
   "compatibility_date": "2025-10-16",
   "pages_build_output_dir": "./dist",
   "compatibility_flags": [
@@ -9,8 +9,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "vehicle-management-db",
-      "database_id": "local-only"
+      "database_name": "vehicle-management-production",
+      "database_id": "ce56dd30-5cad-44b2-bcba-ab262896513d"
     }
   ]
 }
