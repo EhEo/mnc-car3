@@ -1,3 +1,22 @@
+// 베트남 시간 유틸리티 함수
+function toVietnamTime(isoString) {
+  // ISO 문자열을 그대로 베트남 시간대로 해석
+  // 서버에서 이미 베트남 시간(UTC+7)으로 저장했으므로
+  // 시간대 변환 없이 그대로 표시
+  const date = new Date(isoString)
+  const hours = date.getUTCHours().toString().padStart(2, '0')
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+function toVietnamDate(isoString) {
+  const date = new Date(isoString)
+  const year = date.getUTCFullYear()
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
+  const day = date.getUTCDate().toString().padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 // 앱 상태 관리
 const state = {
   employees: [],
@@ -276,7 +295,7 @@ function renderDashboard() {
                           <i class="fas fa-car mr-2"></i>${group.vehicle_number} (${group.driver_name})
                         </div>
                         <div class="text-xs sm:text-sm text-gray-600 mt-1">
-                          <i class="fas fa-clock mr-1"></i>${new Date(group.time).toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})}
+                          <i class="fas fa-clock mr-1"></i>${toVietnamTime(group.time)}
                         </div>
                       </div>
                       <div class="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
@@ -598,7 +617,7 @@ function renderRecords() {
               ` : state.boardingRecords.map(record => `
                 <tr class="hover:bg-gray-50">
                   <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
-                    ${new Date(record.boarding_time).toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})}
+                    ${toVietnamTime(record.boarding_time)}
                   </td>
                   <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">${record.vehicle_number}</td>
                   <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">${record.driver_name}</td>
