@@ -160,9 +160,9 @@ function renderNav() {
     <nav class="bg-white shadow-sm border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <div class="flex justify-between items-center h-14 sm:h-16">
-          <div class="flex items-center">
+          <div class="flex items-center cursor-pointer" onclick="showView('dashboard')">
             <i class="fas fa-car text-blue-600 text-2xl sm:text-2xl mr-2"></i>
-            <h1 class="text-base sm:text-xl font-bold text-gray-900">차량관리</h1>
+            <h1 class="text-base sm:text-xl font-bold text-gray-900 hover:text-blue-600 transition">퇴근차량관리</h1>
           </div>
           <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto">
             <button onclick="showView('dashboard')" class="nav-btn ${state.currentView === 'dashboard' ? 'active' : ''}">
