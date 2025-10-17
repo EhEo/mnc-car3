@@ -577,28 +577,32 @@ function renderRecords() {
       
       <!-- 기간 검색 -->
       <div class="bg-white rounded-lg shadow p-4">
-        <div class="flex flex-col sm:flex-row gap-3 items-end">
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700 mb-2">시작일</label>
-            <input 
-              type="date" 
-              id="start-date" 
-              value="${today}"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+        <div class="flex flex-col gap-3">
+          <!-- 날짜 입력 (한 줄) -->
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-2">시작일</label>
+              <input 
+                type="date" 
+                id="start-date" 
+                value="${today}"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-2">종료일</label>
+              <input 
+                type="date" 
+                id="end-date" 
+                value="${today}"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
           </div>
-          <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700 mb-2">종료일</label>
-            <input 
-              type="date" 
-              id="end-date" 
-              value="${today}"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+          <!-- 검색 버튼 (별도 줄) -->
           <button 
             onclick="searchRecords()" 
-            class="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            class="w-full px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
           >
             <i class="fas fa-search mr-2"></i>검색
           </button>
