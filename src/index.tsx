@@ -4,6 +4,7 @@ import { serveStatic } from 'hono/cloudflare-workers'
 import employees from './routes/employees'
 import vehicles from './routes/vehicles'
 import boarding from './routes/boarding'
+import reports from './routes/reports'
 
 type Bindings = {
   DB: D1Database
@@ -21,6 +22,7 @@ app.use('/static/*', serveStatic({ root: './public' }))
 app.route('/api/employees', employees)
 app.route('/api/vehicles', vehicles)
 app.route('/api/boarding', boarding)
+app.route('/api/reports', reports)
 
 // 메인 페이지
 app.get('/', (c) => {

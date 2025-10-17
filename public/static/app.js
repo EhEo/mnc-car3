@@ -4,9 +4,20 @@ const state = {
   vehicles: [],
   boardingRecords: [],
   stats: null,
+  reports: {
+    byEmployee: [],
+    byVehicle: [],
+    byDepartment: [],
+    daily: [],
+    dashboard: null
+  },
   currentView: 'dashboard',
   selectedVehicle: null,
-  selectedEmployees: []
+  selectedEmployees: [],
+  reportPeriod: {
+    start: new Date(Date.now() - 30*24*60*60*1000).toISOString().split('T')[0],
+    end: new Date().toISOString().split('T')[0]
+  }
 }
 
 // API 호출 함수
@@ -57,6 +68,27 @@ const api = {
   },
   async resetSystem() {
     const res = await axios.post('/api/boarding/reset')
+    return res.data
+  },
+  // Reports API
+  async getReportByEmployee(startDate, endDate) {
+    const res = await axios.get(`/api/reports/by-employee?start_date=${startDate}&end_date=${endDate}`)
+    return res.data
+  },
+  async getReportByVehicle(startDate, endDate) {
+    const res = await axios.get(`/api/reports/by-vehicle?start_date=${startDate}&end_date=${endDate}`)
+    return res.data
+  },
+  async getReportByDepartment(startDate, endDate) {
+    const res = await axios.get(`/api/reports/by-department?start_date=${startDate}&end_date=${endDate}`)
+    return res.data
+  },
+  async getReportDaily(startDate, endDate) {
+    const res = await axios.get(`/api/reports/daily?start_date=${startDate}&end_date=${endDate}`)
+    return res.data
+  },
+  async getReportDashboard() {
+    const res = await axios.get('/api/reports/dashboard')
     return res.data
   }
 }
@@ -128,6 +160,9 @@ function renderNav() {
             </button>
             <button onclick="showView('records')" class="nav-btn ${state.currentView === 'records' ? 'active' : ''}">
               <i class="fas fa-history text-base sm:text-base sm:mr-2"></i><span class="hidden sm:inline">탑승기록</span>
+            </button>
+            <button onclick="showView('reports')" class="nav-btn ${state.currentView === 'reports' ? 'active' : ''}">
+              <i class="fas fa-chart-bar text-base sm:text-base sm:mr-2 text-purple-600"></i><span class="hidden sm:inline">통계</span>
             </button>
           </div>
         </div>
@@ -579,6 +614,192 @@ function renderRecords() {
   `
 }
 
+// 통계 및 리포트 뷰
+function renderReports() {
+  const startDate = state.reportPeriod.start
+  const endDate = state.reportPeriod.end
+  
+  return `
+    <div class="space-y-4 sm:space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+          <i class="fas fa-chart-bar mr-2 text-purple-600"></i>통계 및 리포트
+        </h2>
+      </div>
+      
+      <!-- 기간 선택 -->
+      <div class="bg-white rounded-lg shadow p-4">
+        <div class="flex flex-col sm:flex-row gap-3 items-end">
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-2">시작일</label>
+            <input 
+              type="date" 
+              id="report-start-date" 
+              value="${startDate}"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+          <div class="flex-1">
+            <label class="block text-sm font-medium text-gray-700 mb-2">종료일</label>
+            <input 
+              type="date" 
+              id="report-end-date" 
+              value="${endDate}"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            />
+          </div>
+          <button 
+            onclick="loadReports()" 
+            class="w-full sm:w-auto px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+          >
+            <i class="fas fa-search mr-2"></i>조회
+          </button>
+        </div>
+      </div>
+      
+      <!-- 종합 대시보드 통계 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow p-4 text-white">
+          <div class="text-sm opacity-90">오늘</div>
+          <div class="text-2xl font-bold mt-1">${state.reports.dashboard?.today?.boarding_count || 0}<span class="text-sm ml-1">건</span></div>
+          <div class="text-xs opacity-75 mt-1">${state.reports.dashboard?.today?.employee_count || 0}명 / ${state.reports.dashboard?.today?.vehicle_count || 0}대</div>
+        </div>
+        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow p-4 text-white">
+          <div class="text-sm opacity-90">이번 주</div>
+          <div class="text-2xl font-bold mt-1">${state.reports.dashboard?.this_week?.boarding_count || 0}<span class="text-sm ml-1">건</span></div>
+          <div class="text-xs opacity-75 mt-1">${state.reports.dashboard?.this_week?.employee_count || 0}명 / ${state.reports.dashboard?.this_week?.vehicle_count || 0}대</div>
+        </div>
+        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow p-4 text-white">
+          <div class="text-sm opacity-90">이번 달</div>
+          <div class="text-2xl font-bold mt-1">${state.reports.dashboard?.this_month?.boarding_count || 0}<span class="text-sm ml-1">건</span></div>
+          <div class="text-xs opacity-75 mt-1">${state.reports.dashboard?.this_month?.employee_count || 0}명 / ${state.reports.dashboard?.this_month?.vehicle_count || 0}대</div>
+        </div>
+        <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow p-4 text-white">
+          <div class="text-sm opacity-90">전체</div>
+          <div class="text-2xl font-bold mt-1">${state.reports.dashboard?.total?.boarding_count || 0}<span class="text-sm ml-1">건</span></div>
+          <div class="text-xs opacity-75 mt-1">${state.reports.dashboard?.total?.employee_count || 0}명 / ${state.reports.dashboard?.total?.vehicle_count || 0}대</div>
+        </div>
+      </div>
+      
+      <!-- 직원별 통계 -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-4 py-3 bg-purple-50 border-b border-purple-100 flex justify-between items-center">
+          <h3 class="text-base font-semibold text-gray-900">
+            <i class="fas fa-users mr-2 text-purple-600"></i>직원별 탑승 통계
+          </h3>
+          <span class="text-sm text-gray-600">${startDate} ~ ${endDate}</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">이름</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">부서</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">탑승 횟수</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">이용 일수</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${state.reports.byEmployee.length === 0 ? `
+                <tr>
+                  <td colspan="4" class="px-6 py-8 text-center text-gray-500 text-sm">데이터가 없습니다</td>
+                </tr>
+              ` : state.reports.byEmployee.map((emp, idx) => `
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                    ${idx < 3 ? `<span class="inline-block w-6 h-6 rounded-full text-center text-white text-xs leading-6 mr-2 ${idx === 0 ? 'bg-yellow-500' : idx === 1 ? 'bg-gray-400' : 'bg-orange-400'}">${idx + 1}</span>` : ''}
+                    ${emp.name}
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-500">${emp.department}</td>
+                  <td class="px-4 py-3 text-sm text-right font-semibold text-purple-600">${emp.boarding_count}회</td>
+                  <td class="px-4 py-3 text-sm text-right text-gray-900">${emp.days_count}일</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- 차량별 통계 -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-4 py-3 bg-blue-50 border-b border-blue-100 flex justify-between items-center">
+          <h3 class="text-base font-semibold text-gray-900">
+            <i class="fas fa-car mr-2 text-blue-600"></i>차량별 이용 통계
+          </h3>
+          <span class="text-sm text-gray-600">${startDate} ~ ${endDate}</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">차량번호</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">기사명</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">탑승 횟수</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">이용 직원</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">운행 일수</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${state.reports.byVehicle.length === 0 ? `
+                <tr>
+                  <td colspan="5" class="px-6 py-8 text-center text-gray-500 text-sm">데이터가 없습니다</td>
+                </tr>
+              ` : state.reports.byVehicle.map((vehicle, idx) => `
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                    ${idx < 3 && vehicle.id !== null ? `<span class="inline-block w-6 h-6 rounded-full text-center text-white text-xs leading-6 mr-2 ${idx === 0 ? 'bg-yellow-500' : idx === 1 ? 'bg-gray-400' : 'bg-orange-400'}">${idx + 1}</span>` : ''}
+                    ${vehicle.vehicle_number}
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-500">${vehicle.driver_name}</td>
+                  <td class="px-4 py-3 text-sm text-right font-semibold text-blue-600">${vehicle.boarding_count}회</td>
+                  <td class="px-4 py-3 text-sm text-right text-gray-900">${vehicle.unique_employees}명</td>
+                  <td class="px-4 py-3 text-sm text-right text-gray-900">${vehicle.days_used}일</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- 부서별 통계 -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="px-4 py-3 bg-green-50 border-b border-green-100 flex justify-between items-center">
+          <h3 class="text-base font-semibold text-gray-900">
+            <i class="fas fa-building mr-2 text-green-600"></i>부서별 이용 통계
+          </h3>
+          <span class="text-sm text-gray-600">${startDate} ~ ${endDate}</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">부서</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">직원 수</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">탑승 횟수</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">평균 이용</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${state.reports.byDepartment.length === 0 ? `
+                <tr>
+                  <td colspan="4" class="px-6 py-8 text-center text-gray-500 text-sm">데이터가 없습니다</td>
+                </tr>
+              ` : state.reports.byDepartment.map(dept => `
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm font-medium text-gray-900">${dept.department}</td>
+                  <td class="px-4 py-3 text-sm text-right text-gray-900">${dept.total_employees}명</td>
+                  <td class="px-4 py-3 text-sm text-right font-semibold text-green-600">${dept.boarding_count}회</td>
+                  <td class="px-4 py-3 text-sm text-right text-gray-500">${(dept.boarding_count / dept.total_employees).toFixed(1)}회/인</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `
+}
+
 // 모달 렌더링
 function renderModal() {
   return `
@@ -816,6 +1037,9 @@ function render() {
       break
     case 'records':
       content = renderRecords()
+      break
+    case 'reports':
+      content = renderReports()
       break
   }
   
@@ -1122,6 +1346,45 @@ async function searchRecords() {
   } catch (error) {
     console.error('기록 검색 실패:', error)
     alert('기록 검색에 실패했습니다.')
+  }
+}
+
+// 리포트 데이터 로드
+async function loadReports() {
+  const startDate = document.getElementById('report-start-date').value
+  const endDate = document.getElementById('report-end-date').value
+  
+  if (!startDate || !endDate) {
+    alert('시작일과 종료일을 모두 선택해주세요.')
+    return
+  }
+  
+  if (new Date(startDate) > new Date(endDate)) {
+    alert('시작일이 종료일보다 늦을 수 없습니다.')
+    return
+  }
+  
+  try {
+    // 기간 상태 업데이트
+    state.reportPeriod = { start: startDate, end: endDate }
+    
+    // 모든 리포트 데이터 병렬 로드
+    const [byEmployee, byVehicle, byDepartment, dashboard] = await Promise.all([
+      api.getReportByEmployee(startDate, endDate),
+      api.getReportByVehicle(startDate, endDate),
+      api.getReportByDepartment(startDate, endDate),
+      api.getReportDashboard()
+    ])
+    
+    state.reports.byEmployee = byEmployee.data || []
+    state.reports.byVehicle = byVehicle.data || []
+    state.reports.byDepartment = byDepartment.data || []
+    state.reports.dashboard = dashboard.data || null
+    
+    render()
+  } catch (error) {
+    console.error('리포트 로드 실패:', error)
+    alert('리포트를 불러오는데 실패했습니다.')
   }
 }
 

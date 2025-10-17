@@ -1,0 +1,20 @@
+# Cloudflare Worker for Auto-Reset
+name = "vehicle-management-auto-reset"
+main = "auto-reset.js"
+compatibility_date = "2025-10-16"
+
+# Cron Trigger: Every day at 04:00 Vietnam Time (UTC+7)
+# Vietnam 04:00 = UTC 21:00 (previous day)
+# Cron format: minute hour day month dayOfWeek
+[triggers]
+crons = ["0 21 * * *"]
+
+# D1 Database binding (same as main app)
+[[d1_databases]]
+binding = "DB"
+database_name = "vehicle-management-db"
+database_id = "your-database-id-here"  # Replace with actual database ID from main app
+
+# Optional: Environment variables
+[vars]
+# RESET_TOKEN will be set as a secret using: wrangler secret put RESET_TOKEN
