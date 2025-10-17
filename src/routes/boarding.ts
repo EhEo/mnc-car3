@@ -131,19 +131,25 @@ boarding.get('/stats', async (c) => {
 // 시스템 초기화 (모든 상태를 초기값으로)
 boarding.post('/reset', async (c) => {
   try {
-    // 퇴근완료 직원만 근무중으로 (출장중, 휴가중은 유지)
+    // 1. 오늘 날짜의 탑승 기록 삭제
+    const deleteResult = await c.env.DB.prepare(
+      "DELETE FROM boarding_records WHERE boarding_date = DATE('now')"
+    ).run()
+    
+    // 2. 퇴근완료 직원만 근무중으로 (출장중, 휴가중은 유지)
     await c.env.DB.prepare(
       'UPDATE employees SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE status = ?'
     ).bind('working', 'left').run()
     
-    // 퇴근완료, 운행중 차량만 운행대기로 (수리중, 외근중은 유지)
+    // 3. 퇴근완료, 운행중 차량만 운행대기로 (수리중, 외근중은 유지)
     await c.env.DB.prepare(
       'UPDATE vehicles SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE status IN (?, ?)'
     ).bind('waiting', 'completed', 'driving').run()
     
     return c.json({ 
       success: true, 
-      message: 'System has been reset successfully' 
+      message: 'System has been reset successfully',
+      deleted_records: deleteResult.meta?.changes || 0
     })
   } catch (error) {
     return c.json({ success: false, error: String(error) }, 500)

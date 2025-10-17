@@ -1079,13 +1079,14 @@ function submitBoarding() {
 
 // 시스템 초기화
 function resetSystem() {
-  if (!confirm('모든 직원과 차량의 상태를 초기화하시겠습니까?\n(직원: 근무중, 차량: 운행대기)')) {
+  if (!confirm('시스템을 초기화하시겠습니까?\n\n다음 작업이 수행됩니다:\n• 오늘의 탑승 기록 삭제\n• 퇴근완료 직원 → 근무중\n• 퇴근완료/운행중 차량 → 운행대기\n\n※ 출장중/휴가중/수리중/외근중 상태는 유지됩니다.')) {
     return
   }
   
   api.resetSystem()
-    .then(() => {
-      alert('시스템이 초기화되었습니다.')
+    .then((response) => {
+      const deletedCount = response.data?.deleted_records || 0
+      alert(`시스템이 초기화되었습니다.\n삭제된 오늘의 탑승 기록: ${deletedCount}건`)
       loadData()
     })
     .catch(err => {
